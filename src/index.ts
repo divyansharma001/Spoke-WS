@@ -2,9 +2,31 @@ import { WebSocketServer, WebSocket } from "ws";
 
 const wss = new WebSocketServer({ port: 8080 });
 
-let userCount = 0;
-let allSockets: WebSocket[] = [];
+interface User {
+    socket: WebSocket,
+    room: string
+}
 
+let userCount = 0;
+let allSockets: User[] = [];
+
+//what user can send
+
+// Join a room                  
+//{
+//     "type": "join",
+//     "payload": {
+//       "roomId": "123"
+//     }
+//  }
+
+//Send a message
+// {
+// 	"type": "chat",
+// 	"payload": {
+// 		"message: "hi there"
+// 	}
+// }
 
 wss.on("connection", (socket) => {
     allSockets.push(socket);
@@ -13,15 +35,13 @@ wss.on("connection", (socket) => {
     console.log("User connected #" + userCount);
     
     socket.on("message", (message)=>{
-        console.log("Received: " + message.toString());
-        for(let i=0;i<allSockets.length;i++){
-            const s = allSockets[i];
-            s.send("Sent from server: " + message.toString());
-        }
-        // setTimeout(()=>{
-        //     socket.send("Sent from server: " + message.toString());
-        // }, 1000);
-        
+      const parsedMessage = JSON.parse(message.toString());
+      if(parsedMessage.type=="join"){
+        allSockets.push({
+            socket,
+            room: parsedMessage.payload.roomId
+        })
+      }
     })
 
     socket.on("disconnet", ()=>{
