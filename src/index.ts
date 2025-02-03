@@ -23,4 +23,8 @@ wss.on("connection", (socket) => {
         // }, 1000);
         
     })
+
+    socket.on("disconnet", ()=>{
+        allSockets = allSockets.filter(s => s !== socket);
+    })
 });
