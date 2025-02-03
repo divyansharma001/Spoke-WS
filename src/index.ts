@@ -28,6 +28,8 @@ let allSockets: User[] = [];
 // 	}
 // }
 
+//web socket se jo message aaega wo string format me hoga, even if we send an object, it will be converted to string
+
 wss.on("connection", (socket) => {
     allSockets.push(socket);
 
@@ -41,6 +43,11 @@ wss.on("connection", (socket) => {
             socket,
             room: parsedMessage.payload.roomId
         })
+      }
+
+      if(parsedMessage.type=="chat"){
+       const currentUserRoom = allSockets.find((x) => x.socket === socket)?.room;
+        
       }
     })
 
